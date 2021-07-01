@@ -1,3 +1,29 @@
+## <small>1.0.3 (2021-06-18)</small>
+
+
+#### Fixes
+
+* **admin-ui** Handle all ErrorResults when creating a Fulfillment ([75952dd](https://github.com/vendure-ecommerce/vendure/commit/75952dd)), closes [#929](https://github.com/vendure-ecommerce/vendure/issues/929)
+* **core** Correct handling of nested variantNameCollectionFilters ([14b40bb](https://github.com/vendure-ecommerce/vendure/commit/14b40bb)), closes [#927](https://github.com/vendure-ecommerce/vendure/issues/927)
+* **core** Do not return private collections in Shop API ([33f40f2](https://github.com/vendure-ecommerce/vendure/commit/33f40f2)), closes [#928](https://github.com/vendure-ecommerce/vendure/issues/928)
+* **core** Fix Admin/Customer user conflict with external auth ([69f46a3](https://github.com/vendure-ecommerce/vendure/commit/69f46a3)), closes [#926](https://github.com/vendure-ecommerce/vendure/issues/926)
+* **core** Remove "Placeholder" from Permission enum ([eabfe77](https://github.com/vendure-ecommerce/vendure/commit/eabfe77))
+
+## <small>1.0.2 (2021-06-10)</small>
+
+
+#### Fixes
+
+* **admin-ui** Allow Channel tokens to be updated from ChannelDetail ([cafa04e](https://github.com/vendure-ecommerce/vendure/commit/cafa04e))
+* **core** Do not error when removing deleted variant from channel ([e3e8828](https://github.com/vendure-ecommerce/vendure/commit/e3e8828))
+* **core** Fix worker error when using custom Logger ([cbe764a](https://github.com/vendure-ecommerce/vendure/commit/cbe764a)), closes [#912](https://github.com/vendure-ecommerce/vendure/issues/912)
+* **core** Update search index when removing translated variants ([fced1dc](https://github.com/vendure-ecommerce/vendure/commit/fced1dc)), closes [#896](https://github.com/vendure-ecommerce/vendure/issues/896)
+* **create** Remove tslib resolution from package.json ([863ffcb](https://github.com/vendure-ecommerce/vendure/commit/863ffcb)), closes [#925](https://github.com/vendure-ecommerce/vendure/issues/925)
+
+#### Perf
+
+* **core** Improve performance of apply-collection-filters job (#915) ([1e8c137](https://github.com/vendure-ecommerce/vendure/commit/1e8c137)), closes [#915](https://github.com/vendure-ecommerce/vendure/issues/915)
+
 ## <small>1.0.1 (2021-05-27)</small>
 
 

@@ -2,6 +2,7 @@
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
+    DefaultLogger,
     DefaultSearchPlugin,
     facetValueCollectionFilter,
     mergeConfig,
@@ -30,6 +31,7 @@ import {
     Reindex,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    SearchCollections,
     SearchFacetValues,
     SearchGetAssets,
     SearchGetPrices,
@@ -40,7 +42,7 @@ import {
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
-    UpdateTaxRate,
+    UpdateTaxRate
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
@@ -72,6 +74,7 @@ jest.setTimeout(10000);
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
+            logger: new DefaultLogger(),
             plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin],
         }),
     );
@@ -550,6 +553,34 @@ describe('Default search plugin', () => {
                 { count: 3, facetValue: { id: 'T_5', name: 'home & garden' } },
                 { count: 3, facetValue: { id: 'T_6', name: 'plants' } },
             ]);
+        });
+
+        it('returns correct collections when not grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: false,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+            ]);
+        });
+
+        it('returns correct collections when grouped by product', async () => {
+            const result = await shopClient.query<SearchCollections.Query, SearchCollections.Variables>(
+                SEARCH_GET_COLLECTIONS,
+                {
+                    input: {
+                        groupByProduct: true,
+                    },
+                },
+            );
+            expect(result.search.collections).toEqual([
+                {collection: {id: 'T_2', name: 'Plants',},count: 3,},
+                ]);
         });
 
         it('encodes the productId and productVariantId', async () => {
@@ -1282,6 +1313,72 @@ describe('Default search plugin', () => {
                 });
                 expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/896
+            it('removing from channel with multiple languages', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_4',
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'product en',
+                                slug: 'product-en',
+                                description: 'en',
+                            },
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'product de',
+                                slug: 'product-de',
+                                description: 'de',
+                            },
+                        ],
+                    },
+                });
+
+                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
+                    ASSIGN_PRODUCT_TO_CHANNEL,
+                    {
+                        input: { channelId: secondChannel.id, productIds: ['T_4'] },
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                async function searchSecondChannelForDEProduct() {
+                    adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                    const { search } = await adminClient.query<
+                        SearchProductsShop.Query,
+                        SearchProductsShop.Variables
+                    >(
+                        SEARCH_PRODUCTS,
+                        {
+                            input: { term: 'product', groupByProduct: true },
+                        },
+                        { languageCode: LanguageCode.de },
+                    );
+                    return search;
+                }
+
+                const search1 = await searchSecondChannelForDEProduct();
+                expect(search1.items.map(i => i.productName)).toEqual(['product de']);
+
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { removeProductsFromChannel } = await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                    input: {
+                        productIds: ['T_4'],
+                        channelId: secondChannel.id,
+                    },
+                });
+                await awaitRunningJobs(adminClient);
+
+                const search2 = await searchSecondChannelForDEProduct();
+                expect(search2.items.map(i => i.productName)).toEqual([]);
+            });
         });
 
         describe('multiple language handling', () => {
@@ -1400,6 +1497,21 @@ export const SEARCH_GET_FACET_VALUES = gql`
             facetValues {
                 count
                 facetValue {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+export const SEARCH_GET_COLLECTIONS = gql`
+    query SearchCollections($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            collections {
+                count
+                collection {
                     id
                     name
                 }

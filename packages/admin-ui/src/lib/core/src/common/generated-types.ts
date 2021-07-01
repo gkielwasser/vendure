@@ -460,6 +460,7 @@ export type Mutation = {
   setActiveChannel: UserStatus;
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
+  setContentLanguage: LanguageCode;
   setOrderCustomFields?: Maybe<Order>;
   setUiLanguage: LanguageCode;
   setUiTheme: Scalars['String'];
@@ -906,6 +907,11 @@ export type MutationSetAsLoggedInArgs = {
 };
 
 
+export type MutationSetContentLanguageArgs = {
+  languageCode: LanguageCode;
+};
+
+
 export type MutationSetOrderCustomFieldsArgs = {
   input: UpdateOrderInput;
 };
@@ -1083,6 +1089,13 @@ export type MutationUpdateZoneArgs = {
   input: UpdateZoneInput;
 };
 
+export type AdministratorListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<AdministratorSortParameter>;
+  filter?: Maybe<AdministratorFilterParameter>;
+};
+
 export type CreateAdministratorInput = {
   firstName: Scalars['String'];
   lastName: Scalars['String'];
@@ -1157,12 +1170,12 @@ export type MimeTypeError = ErrorResult & {
 export type CreateAssetResult = Asset | MimeTypeError;
 
 export type AssetListOptions = {
+  tags?: Maybe<Array<Scalars['String']>>;
+  tagsOperator?: Maybe<LogicalOperator>;
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<AssetSortParameter>;
   filter?: Maybe<AssetFilterParameter>;
-  tags?: Maybe<Array<Scalars['String']>>;
-  tagsOperator?: Maybe<LogicalOperator>;
 };
 
 export type CreateAssetInput = {
@@ -1199,6 +1212,10 @@ export type UpdateAssetInput = {
 export type AssignAssetsToChannelInput = {
   assetIds: Array<Scalars['ID']>;
   channelId: Scalars['ID'];
+};
+
+export type AuthenticationInput = {
+  native?: Maybe<NativeAuthInput>;
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -1267,6 +1284,13 @@ export type CollectionProductVariantsArgs = {
   options?: Maybe<ProductVariantListOptions>;
 };
 
+export type CollectionListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CollectionSortParameter>;
+  filter?: Maybe<CollectionFilterParameter>;
+};
+
 export type MoveCollectionInput = {
   collectionId: Scalars['ID'];
   parentId: Scalars['ID'];
@@ -1330,6 +1354,13 @@ export type UpdateCountryInput = {
   enabled?: Maybe<Scalars['Boolean']>;
 };
 
+export type CountryListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CountrySortParameter>;
+  filter?: Maybe<CountryFilterParameter>;
+};
+
 export type Customer = Node & {
   __typename?: 'Customer';
   groups: Array<CustomerGroup>;
@@ -1364,6 +1395,13 @@ export type CustomerGroupList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
+export type CustomerGroupListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerGroupSortParameter>;
+  filter?: Maybe<CustomerGroupFilterParameter>;
+};
+
 export type CreateCustomerGroupInput = {
   name: Scalars['String'];
   customerIds?: Maybe<Array<Scalars['ID']>>;
@@ -1382,6 +1420,13 @@ export type UpdateCustomerInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CustomerListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerSortParameter>;
+  filter?: Maybe<CustomerFilterParameter>;
 };
 
 export type AddNoteToCustomerInput = {
@@ -1411,6 +1456,13 @@ export type Facet = Node & {
   values: Array<FacetValue>;
   translations: Array<FacetTranslation>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FacetListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<FacetSortParameter>;
+  filter?: Maybe<FacetFilterParameter>;
 };
 
 export type FacetTranslationInput = {
@@ -1549,6 +1601,13 @@ export enum JobState {
   CANCELLED = 'CANCELLED'
 }
 
+export type JobListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<JobSortParameter>;
+  filter?: Maybe<JobFilterParameter>;
+};
+
 export type JobList = PaginatedList & {
   __typename?: 'JobList';
   items: Array<Job>;
@@ -1684,6 +1743,7 @@ export type OrderModification = Node & {
 };
 
 export type OrderFilterParameter = {
+  customerLastName?: Maybe<StringOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   orderPlacedAt?: Maybe<DateOperators>;
@@ -1698,10 +1758,10 @@ export type OrderFilterParameter = {
   shippingWithTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
   totalWithTax?: Maybe<NumberOperators>;
-  customerLastName?: Maybe<StringOperators>;
 };
 
 export type OrderSortParameter = {
+  customerLastName?: Maybe<SortOrder>;
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
@@ -1715,7 +1775,13 @@ export type OrderSortParameter = {
   shippingWithTax?: Maybe<SortOrder>;
   total?: Maybe<SortOrder>;
   totalWithTax?: Maybe<SortOrder>;
-  customerLastName?: Maybe<SortOrder>;
+};
+
+export type OrderListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<OrderSortParameter>;
+  filter?: Maybe<OrderFilterParameter>;
 };
 
 export type UpdateOrderInput = {
@@ -2034,6 +2100,13 @@ export type PaymentMethodList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
+export type PaymentMethodListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<PaymentMethodSortParameter>;
+  filter?: Maybe<PaymentMethodFilterParameter>;
+};
+
 export type CreatePaymentMethodInput = {
   name: Scalars['String'];
   code: Scalars['String'];
@@ -2116,7 +2189,7 @@ export type ProductVariant = Node & {
   options: Array<ProductOption>;
   facetValues: Array<FacetValue>;
   translations: Array<ProductVariantTranslation>;
-  customFields?: Maybe<ProductVariantCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -2202,6 +2275,20 @@ export type StockMovementListOptions = {
   take?: Maybe<Scalars['Int']>;
 };
 
+export type ProductListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductSortParameter>;
+  filter?: Maybe<ProductFilterParameter>;
+};
+
+export type ProductVariantListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductVariantSortParameter>;
+  filter?: Maybe<ProductVariantFilterParameter>;
+};
+
 export type ProductTranslationInput = {
   id?: Maybe<Scalars['ID']>;
   languageCode: LanguageCode;
@@ -2257,7 +2344,7 @@ export type CreateProductVariantInput = {
   outOfStockThreshold?: Maybe<Scalars['Int']>;
   useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
   trackInventory?: Maybe<GlobalFlag>;
-  customFields?: Maybe<CreateProductVariantCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductVariantInput = {
@@ -2274,7 +2361,7 @@ export type UpdateProductVariantInput = {
   outOfStockThreshold?: Maybe<Scalars['Int']>;
   useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
   trackInventory?: Maybe<GlobalFlag>;
-  customFields?: Maybe<UpdateProductVariantCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type AssignProductsToChannelInput = {
@@ -2308,6 +2395,13 @@ export type ProductOptionInUseError = ErrorResult & {
 };
 
 export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
+export type PromotionListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<PromotionSortParameter>;
+  filter?: Maybe<PromotionFilterParameter>;
+};
 
 export type CreatePromotionInput = {
   name: Scalars['String'];
@@ -2353,6 +2447,13 @@ export type CreatePromotionResult = Promotion | MissingConditionsError;
 
 export type UpdatePromotionResult = Promotion | MissingConditionsError;
 
+export type RoleListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<RoleSortParameter>;
+  filter?: Maybe<RoleFilterParameter>;
+};
+
 export type CreateRoleInput = {
   code: Scalars['String'];
   description: Scalars['String'];
@@ -2366,6 +2467,13 @@ export type UpdateRoleInput = {
   description?: Maybe<Scalars['String']>;
   permissions?: Maybe<Array<Permission>>;
   channelIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type ShippingMethodListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ShippingMethodSortParameter>;
+  filter?: Maybe<ShippingMethodFilterParameter>;
 };
 
 export type ShippingMethodTranslationInput = {
@@ -2516,6 +2624,13 @@ export type StockMovementList = {
   totalItems: Scalars['Int'];
 };
 
+export type TagListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TagSortParameter>;
+  filter?: Maybe<TagFilterParameter>;
+};
+
 export type CreateTagInput = {
   value: Scalars['String'];
 };
@@ -2534,6 +2649,13 @@ export type UpdateTaxCategoryInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   isDefault?: Maybe<Scalars['Boolean']>;
+};
+
+export type TaxRateListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TaxRateSortParameter>;
+  filter?: Maybe<TaxRateFilterParameter>;
 };
 
 export type CreateTaxRateInput = {
@@ -3645,13 +3767,24 @@ export type RelationCustomFieldConfig = CustomField & {
   scalarFields: Array<Scalars['String']>;
 };
 
+export type TextCustomFieldConfig = CustomField & {
+  __typename?: 'TextCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString';
   languageCode: LanguageCode;
   value: Scalars['String'];
 };
 
-export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig;
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig | TextCustomFieldConfig;
 
 export type CustomerGroup = Node & {
   __typename?: 'CustomerGroup';
@@ -3741,6 +3874,13 @@ export type HistoryEntryList = PaginatedList & {
   __typename?: 'HistoryEntryList';
   items: Array<HistoryEntry>;
   totalItems: Scalars['Int'];
+};
+
+export type HistoryEntryListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<HistoryEntrySortParameter>;
+  filter?: Maybe<HistoryEntryFilterParameter>;
 };
 
 /**
@@ -4309,6 +4449,7 @@ export type SearchResponse = {
   items: Array<SearchResult>;
   totalItems: Scalars['Int'];
   facetValues: Array<FacetValueResult>;
+  collections: Array<CollectionResult>;
 };
 
 /**
@@ -4318,6 +4459,16 @@ export type SearchResponse = {
 export type FacetValueResult = {
   __typename?: 'FacetValueResult';
   facetValue: FacetValue;
+  count: Scalars['Int'];
+};
+
+/**
+ * Which Collections are present in the products returned
+ * by the search, and in what quantity.
+ */
+export type CollectionResult = {
+  __typename?: 'CollectionResult';
+  collection: Collection;
   count: Scalars['Int'];
 };
 
@@ -4509,125 +4660,6 @@ export type Zone = Node & {
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
   members: Array<Country>;
-};
-
-export type AdministratorListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<AdministratorSortParameter>;
-  filter?: Maybe<AdministratorFilterParameter>;
-};
-
-export type CollectionListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CollectionSortParameter>;
-  filter?: Maybe<CollectionFilterParameter>;
-};
-
-export type CountryListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CountrySortParameter>;
-  filter?: Maybe<CountryFilterParameter>;
-};
-
-export type CustomerGroupListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CustomerGroupSortParameter>;
-  filter?: Maybe<CustomerGroupFilterParameter>;
-};
-
-export type CustomerListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CustomerSortParameter>;
-  filter?: Maybe<CustomerFilterParameter>;
-};
-
-export type FacetListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<FacetSortParameter>;
-  filter?: Maybe<FacetFilterParameter>;
-};
-
-export type JobListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<JobSortParameter>;
-  filter?: Maybe<JobFilterParameter>;
-};
-
-export type OrderListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<OrderSortParameter>;
-  filter?: Maybe<OrderFilterParameter>;
-};
-
-export type PaymentMethodListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<PaymentMethodSortParameter>;
-  filter?: Maybe<PaymentMethodFilterParameter>;
-};
-
-export type ProductListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductSortParameter>;
-  filter?: Maybe<ProductFilterParameter>;
-};
-
-export type ProductVariantListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductVariantSortParameter>;
-  filter?: Maybe<ProductVariantFilterParameter>;
-};
-
-export type PromotionListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<PromotionSortParameter>;
-  filter?: Maybe<PromotionFilterParameter>;
-};
-
-export type RoleListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<RoleSortParameter>;
-  filter?: Maybe<RoleFilterParameter>;
-};
-
-export type ShippingMethodListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ShippingMethodSortParameter>;
-  filter?: Maybe<ShippingMethodFilterParameter>;
-};
-
-export type TagListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<TagSortParameter>;
-  filter?: Maybe<TagFilterParameter>;
-};
-
-export type TaxRateListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<TaxRateSortParameter>;
-  filter?: Maybe<TaxRateFilterParameter>;
-};
-
-export type HistoryEntryListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<HistoryEntrySortParameter>;
-  filter?: Maybe<HistoryEntryFilterParameter>;
 };
 
 export type AdministratorFilterParameter = {
@@ -4836,7 +4868,6 @@ export type ProductVariantFilterParameter = {
   currencyCode?: Maybe<StringOperators>;
   priceWithTax?: Maybe<NumberOperators>;
   stockLevel?: Maybe<StringOperators>;
-  discountPrice?: Maybe<NumberOperators>;
 };
 
 export type ProductVariantSortParameter = {
@@ -4852,7 +4883,6 @@ export type ProductVariantSortParameter = {
   price?: Maybe<SortOrder>;
   priceWithTax?: Maybe<SortOrder>;
   stockLevel?: Maybe<SortOrder>;
-  discountPrice?: Maybe<SortOrder>;
 };
 
 export type PromotionFilterParameter = {
@@ -4953,23 +4983,6 @@ export type HistoryEntrySortParameter = {
   updatedAt?: Maybe<SortOrder>;
 };
 
-export type ProductVariantCustomFields = {
-  __typename?: 'ProductVariantCustomFields';
-  discountPrice?: Maybe<Scalars['Int']>;
-};
-
-export type CreateProductVariantCustomFieldsInput = {
-  discountPrice?: Maybe<Scalars['Int']>;
-};
-
-export type UpdateProductVariantCustomFieldsInput = {
-  discountPrice?: Maybe<Scalars['Int']>;
-};
-
-export type AuthenticationInput = {
-  native?: Maybe<NativeAuthInput>;
-};
-
 export type NativeAuthInput = {
   username: Scalars['String'];
   password: Scalars['String'];
@@ -5015,6 +5028,7 @@ export type UserStatus = {
 export type UiState = {
   __typename?: 'UiState';
   language: LanguageCode;
+  contentLanguage: LanguageCode;
   theme: Scalars['String'];
 };
 
@@ -5278,6 +5292,13 @@ export type SetUiLanguageMutationVariables = Exact<{
 
 export type SetUiLanguageMutation = Pick<Mutation, 'setUiLanguage'>;
 
+export type SetContentLanguageMutationVariables = Exact<{
+  languageCode: LanguageCode;
+}>;
+
+
+export type SetContentLanguageMutation = Pick<Mutation, 'setContentLanguage'>;
+
 export type SetUiThemeMutationVariables = Exact<{
   theme: Scalars['String'];
 }>;
@@ -5306,7 +5327,7 @@ export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUiStateQuery = { uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'theme'>
+    & Pick<UiState, 'language' | 'contentLanguage' | 'theme'>
   ) };
 
 export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
@@ -5320,7 +5341,7 @@ export type GetClientStateQuery = { networkStatus: (
     & UserStatusFragment
   ), uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language' | 'theme'>
+    & Pick<UiState, 'language' | 'contentLanguage' | 'theme'>
   ) };
 
 export type SetActiveChannelMutationVariables = Exact<{
@@ -6042,9 +6063,11 @@ export type CreateFulfillmentMutation = { addFulfillmentToOrder: (
     & ErrorResult_InvalidFulfillmentHandlerError_Fragment
   ) | (
     { __typename?: 'FulfillmentStateTransitionError' }
+    & Pick<FulfillmentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>
     & ErrorResult_FulfillmentStateTransitionError_Fragment
   ) | (
     { __typename?: 'CreateFulfillmentError' }
+    & Pick<CreateFulfillmentError, 'errorCode' | 'message' | 'fulfillmentHandlerError'>
     & ErrorResult_CreateFulfillmentError_Fragment
   ) };
 
@@ -7551,7 +7574,19 @@ type CustomFieldConfig_RelationCustomFieldConfig_Fragment = (
   )>> }
 );
 
-export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment | CustomFieldConfig_RelationCustomFieldConfig_Fragment;
+type CustomFieldConfig_TextCustomFieldConfig_Fragment = (
+  { __typename?: 'TextCustomFieldConfig' }
+  & Pick<TextCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
+
+export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment | CustomFieldConfig_RelationCustomFieldConfig_Fragment | CustomFieldConfig_TextCustomFieldConfig_Fragment;
 
 export type StringCustomFieldFragment = (
   { __typename?: 'StringCustomFieldConfig' }
@@ -7571,6 +7606,11 @@ export type LocaleStringCustomFieldFragment = (
   { __typename?: 'LocaleStringCustomFieldConfig' }
   & Pick<LocaleStringCustomFieldConfig, 'pattern'>
   & CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment
+);
+
+export type TextCustomFieldFragment = (
+  { __typename?: 'TextCustomFieldConfig' }
+  & CustomFieldConfig_TextCustomFieldConfig_Fragment
 );
 
 export type BooleanCustomFieldFragment = (
@@ -7637,7 +7677,12 @@ type CustomFields_RelationCustomFieldConfig_Fragment = (
   & RelationCustomFieldFragment
 );
 
-export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment;
+type CustomFields_TextCustomFieldConfig_Fragment = (
+  { __typename?: 'TextCustomFieldConfig' }
+  & TextCustomFieldFragment
+);
+
+export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment | CustomFields_TextCustomFieldConfig_Fragment;
 
 export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7677,6 +7722,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Administrator: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7698,6 +7746,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Asset: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7719,6 +7770,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Channel: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7740,6 +7794,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Collection: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7761,6 +7818,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Customer: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7782,6 +7842,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Facet: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7803,6 +7866,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, FacetValue: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7824,6 +7890,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Fulfillment: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7845,6 +7914,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, GlobalSettings: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7866,6 +7938,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Order: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7887,6 +7962,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, OrderLine: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7908,6 +7986,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, Product: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7929,6 +8010,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, ProductOption: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7950,6 +8034,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, ProductOptionGroup: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7971,6 +8058,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, ProductVariant: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7992,6 +8082,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, ShippingMethod: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -8013,6 +8106,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )>, User: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -8034,6 +8130,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'TextCustomFieldConfig' }
+          & CustomFields_TextCustomFieldConfig_Fragment
         )> }
       ) }
     ) }
@@ -8544,6 +8643,11 @@ export namespace SetUiLanguage {
   export type Mutation = SetUiLanguageMutation;
 }
 
+export namespace SetContentLanguage {
+  export type Variables = SetContentLanguageMutationVariables;
+  export type Mutation = SetContentLanguageMutation;
+}
+
 export namespace SetUiTheme {
   export type Variables = SetUiThemeMutationVariables;
   export type Mutation = SetUiThemeMutation;
@@ -8932,6 +9036,8 @@ export namespace CreateFulfillment {
   export type Variables = CreateFulfillmentMutationVariables;
   export type Mutation = CreateFulfillmentMutation;
   export type AddFulfillmentToOrder = (NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>);
+  export type CreateFulfillmentErrorInlineFragment = (DiscriminateUnion<(NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>), { __typename?: 'CreateFulfillmentError' }>);
+  export type FulfillmentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>), { __typename?: 'FulfillmentStateTransitionError' }>);
 }
 
 export namespace CancelOrder {
@@ -9658,6 +9764,10 @@ export namespace LocaleStringCustomField {
   export type Fragment = LocaleStringCustomFieldFragment;
 }
 
+export namespace TextCustomField {
+  export type Fragment = TextCustomFieldFragment;
+}
+
 export namespace BooleanCustomField {
   export type Fragment = BooleanCustomFieldFragment;
 }
@@ -9682,6 +9792,7 @@ export namespace CustomFields {
   export type Fragment = CustomFieldsFragment;
   export type StringCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'StringCustomFieldConfig' }>);
   export type LocaleStringCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'LocaleStringCustomFieldConfig' }>);
+  export type TextCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'TextCustomFieldConfig' }>);
   export type BooleanCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'BooleanCustomFieldConfig' }>);
   export type IntCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'IntCustomFieldConfig' }>);
   export type FloatCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'FloatCustomFieldConfig' }>);

@@ -3,7 +3,6 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
     DefaultJobQueuePlugin,
     facetValueCollectionFilter,
-    JobQueueService,
     variantNameCollectionFilter,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
@@ -406,7 +405,7 @@ describe('Collection resolver', () => {
                 },
             });
 
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
             expect(updateCollection).toMatchSnapshot();
 
             pearCollection = updateCollection;
@@ -423,7 +422,7 @@ describe('Collection resolver', () => {
                     featuredAssetId: assets[3].id,
                 },
             });
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
             expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
         });
 
@@ -437,7 +436,7 @@ describe('Collection resolver', () => {
                     assetIds: [],
                 },
             });
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
             expect(updateCollection.assets).toEqual([]);
             expect(updateCollection.featuredAsset).toBeNull();
         });
@@ -710,7 +709,7 @@ describe('Collection resolver', () => {
         });
 
         it('re-evaluates Collection contents on move', async () => {
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
 
             const result = await adminClient.query<
                 GetCollectionProducts.Query,
@@ -920,7 +919,7 @@ describe('Collection resolver', () => {
                 },
             );
             collectionToDeleteChild = result2.createCollection;
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
         });
 
         it(
@@ -1164,7 +1163,7 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
                 const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
@@ -1209,7 +1208,7 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
                 const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
@@ -1263,7 +1262,7 @@ describe('Collection resolver', () => {
                     } as CreateCollectionInput,
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
                 const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
                     GET_COLLECTION,
                     {
@@ -1286,12 +1285,14 @@ describe('Collection resolver', () => {
             async function createVariantNameFilteredCollection(
                 operator: string,
                 term: string,
+                parentId?: string,
             ): Promise<Collection.Fragment> {
                 const { createCollection } = await adminClient.query<
                     CreateCollection.Mutation,
                     CreateCollection.Variables
                 >(CREATE_COLLECTION, {
                     input: {
+                        parentId,
                         translations: [
                             {
                                 languageCode: LanguageCode.en,
@@ -1317,7 +1318,7 @@ describe('Collection resolver', () => {
                         ],
                     },
                 });
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
                 return createCollection;
             }
 
@@ -1395,6 +1396,41 @@ describe('Collection resolver', () => {
                     'Hat',
                 ]);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/927
+            it('nested variantName filter', async () => {
+                const parent = await createVariantNameFilteredCollection('contains', 'lap');
+
+                const parentResult = await adminClient.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: parent.id,
+                });
+
+                expect(parentResult.collection?.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                ]);
+
+                const child = await createVariantNameFilteredCollection('contains', 'GB', parent.id);
+
+                const childResult = await adminClient.query<
+                    GetCollectionProducts.Query,
+                    GetCollectionProducts.Variables
+                >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                    id: child.id,
+                });
+
+                expect(childResult.collection?.productVariants.items.map(i => i.name)).toEqual([
+                    'Laptop 13 inch 8GB',
+                    'Laptop 15 inch 8GB',
+                    'Laptop 13 inch 16GB',
+                    'Laptop 15 inch 16GB',
+                ]);
+            });
         });
 
         describe('re-evaluation of contents on changes', () => {
@@ -1430,7 +1466,7 @@ describe('Collection resolver', () => {
                     },
                 });
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
 
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
@@ -1463,7 +1499,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
 
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
@@ -1497,7 +1533,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                await awaitRunningJobs(adminClient);
+                await awaitRunningJobs(adminClient, 5000);
 
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
@@ -1550,7 +1586,7 @@ describe('Collection resolver', () => {
                 } as CreateCollectionInput,
             });
 
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
 
             const result = await adminClient.query<
                 GetCollectionProducts.Query,
@@ -1606,7 +1642,7 @@ describe('Collection resolver', () => {
                     name: 'endsWith camera',
                 },
                 {
-                    id: 'T_21',
+                    id: 'T_23',
                     name: 'pear electronics',
                 },
             ]);
@@ -1641,7 +1677,7 @@ describe('Collection resolver', () => {
                     input: [{ id: 'T_1', enabled: false }],
                 },
             );
-            await awaitRunningJobs(adminClient);
+            await awaitRunningJobs(adminClient, 5000);
 
             const { collection } = await shopClient.query<
                 GetCollectionProducts.Query,
